@@ -237,12 +237,30 @@ function main()
 
     var dirLight = DirectionalLight(Vec3(-1.0, 1.0, 1.0).getNorm(), Vec3(1.0, 1.0, 1.0));
 
+    var quadVerts = [
+        -1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
+        +1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0,
+        +1.0, +1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        -1.0, +1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    ];
+
+    var quadIndices = [
+        0, 1, 2, 0, 2, 3
+    ];
+
+    var screenQuad = new Model(gl, quadVerts, 4, quadIndices, 6);
+    var quadShader = new TextureShader(gl);
+
+    var renderBuffer = new RenderTexture(gl, canvas.width, canvas.height, true);
+
     function render(time)
     {
         timer.update(time);
         camera.update();
 
         colorPass();
+        postProcessPass();
+
         requestAnimationFrame(render);
 
     } 
@@ -275,6 +293,8 @@ function main()
 
     var colorPass = function()
     {
+
+        renderBuffer.bind();
         view = camera.getViewMatrix();
 
         lightShader.bindProgram();
@@ -353,5 +373,24 @@ function main()
         skyboxShader.bindAttributes();
         skyboxModel.draw();
 
+    }
+
+    var postProcessPass = function()
+    {
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        gl.viewport(0, 0, canvas.width, canvas.height);
+        gl.clearColor(0.25, 0.25, 0.25, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BTI);
+
+
+        quadShader.bindProgram();
+        gl.uniformMatrix4fv(quadShader.uniforms.projection, false, MatrixIdentity().data);
+        gl.uniformMatrix4fv(quadShader.uniforms.view, false, MatrixIdentity().data);
+        gl.uniformMatrix4fv(quadShader.uniforms.world, false, MatrixIdentity().data);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, renderBuffer.colorTex);
+        screenQuad.bind();
+        quadShader.bindAttributes();
+        screenQuad.draw(); 
     }
 }
