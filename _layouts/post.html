@@ -34,6 +34,6 @@ layout: default
 
 {% for file in site.static_files %}
     {% if file.basename == page.javascript %}
-    <script type='text/javascript' src='{{ site.baseurl }} {{ file.path }}' ></script>
+    <script type='text/javascript' src='/{{ site.baseurl }}{{ file.path }}' ></script>
     {% endif %}
 {% endfor %}
