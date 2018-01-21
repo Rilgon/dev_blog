@@ -14,7 +14,9 @@ var main = function()
         console.log(data.name);
     }
 
-    req.open('GET', '/dev_blog/models/test.json');
+    var siteRoot = document.getElementById('siteRoot').innerHTML;
+
+    req.open('GET', siteRoot + 'models/test.json');
     req.responseType = 'json';
     req.send();
     
