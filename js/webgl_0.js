@@ -1,6 +1,6 @@
 var main = function()
 {
-    var context = document.getElementById('gl');
+    /*var context = document.getElementById('gl');
     var gl = context.getContext('experimental-webgl');
 
     gl.clearColor(0.4, 0.4, 0.4, 1.0);
@@ -16,7 +16,9 @@ var main = function()
 
     req.open('GET', '/models/test.json');
     req.responseType = 'json';
-    req.send();
+    req.send();*/
+    
+    console.log('js working?');
 }
 
 
