@@ -273,6 +273,11 @@ function main()
         camera.onMosueUp(e);
     }
 
+    canvas.onmouseleave = function(e)
+    {
+        camera.onMosueUp(e);
+    }
+
     var colorPass = function()
     {
         view = camera.getViewMatrix();
