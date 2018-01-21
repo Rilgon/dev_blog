@@ -17,6 +17,7 @@ title: Graphics and Game dev blog
 email: your-email@example.com
 description: >- # this means to ignore newlines until "baseurl:"
   Something
+#baseurl: "" # the subpath of your site, e.g. /blog
 baseurl: "dev_blog" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: jekyllrb
