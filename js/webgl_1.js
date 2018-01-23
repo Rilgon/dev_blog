@@ -249,7 +249,8 @@ function main()
     ];
 
     var screenQuad = new Model(gl, quadVerts, 4, quadIndices, 6);
-    var quadShader = new TextureShader(gl);
+    var postShader = new BasicPostShader(gl);
+    var postEffect = 2;
 
     var renderBuffer = new RenderTexture(gl, canvas.width, canvas.height, true);
 
@@ -270,6 +271,23 @@ function main()
     window.onkeydown = function(e)
     {
         camera.onKeyDown(e);
+
+        if(e.key == '1')
+        {
+            postEffect = 0;
+        }
+        if(e.key == '2')
+        {
+            postEffect = 1;
+        }
+        if(e.key == '3')
+        {
+            postEffect = 2;
+        }
+        if(e.key == '4')
+        {
+            postEffect = 3;
+        }
     }
     window.onkeyup = function(e)
     {
@@ -383,14 +401,16 @@ function main()
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BTI);
 
 
-        quadShader.bindProgram();
-        gl.uniformMatrix4fv(quadShader.uniforms.projection, false, MatrixIdentity().data);
-        gl.uniformMatrix4fv(quadShader.uniforms.view, false, MatrixIdentity().data);
-        gl.uniformMatrix4fv(quadShader.uniforms.world, false, MatrixIdentity().data);
+        postShader.bindProgram();
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, renderBuffer.colorTex);
+
+        gl.uniform1f(postShader.uniforms.invWidth, 1.0 / canvas.width);
+        gl.uniform1f(postShader.uniforms.invHeight, 1.0 / canvas.height);
+        gl.uniform1i(postShader.uniforms.postEffect, postEffect);
+
         screenQuad.bind();
-        quadShader.bindAttributes();
+        postShader.bindAttributes();
         screenQuad.draw(); 
     }
 }

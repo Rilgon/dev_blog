@@ -1,0 +1,17 @@
+---
+layout: post
+title:  "WebGL Post-processing"
+date:   2018-01-22 19:23:01 -0600
+categories: jekyll update
+javascript: "webgl_1"
+---
+<p style="font-size:14px">I am doing research on post-processing effects in grad school currently so I thought it would be interesting to
+    start implementing some of the effects on WebGL. The basis of getting post-processing working is to render the main scene to a framebuffer
+    that can be sampled in a fragment shader which draws to a quad covering the viewport. This was pretty easy in this simple graphics environment
+    I have set up in WebGL, but it was quite a lot of work in my own engine...I've added the first couple of effects that came to my
+    mind when I first started doing the research, such as averaging neihbor pixels and grayscale, as well as one of the first filters I looked into, 
+    the Laplace filter. The effects can be swapped by using the number keys.
+
+</p>
+
+<canvas width="800" height="600" id='gl'></canvas>

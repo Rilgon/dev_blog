@@ -367,3 +367,88 @@ var DepthShader = function(gl)
         }
     };
 }
+
+var BasicPostShader = function(gl)
+{
+    const vs_code = 
+        'attribute vec4 position;\n' + 
+        'attribute vec2 uv;\n' + 
+        'varying highp vec2 fragUV;\n' + 
+        'void main() {\n' + 
+        'gl_Position = position;\n' + 
+        'fragUV = vec2(uv.x, 1.0 - uv.y);\n' +
+        '}';
+
+    const fs_code = 
+        'const int POST_NONE = 0;\n' + 
+        'const int POST_SMOOTH = 1;\n' + 
+        'const int POST_GRAYSCALE = 2;\n' + 
+        'const int POST_LAPLACE = 3;\n' + 
+        'precision highp float;\n' + 
+        'varying highp vec2 fragUV;\n' + 
+        'uniform sampler2D mSampler;\n' + 
+        'uniform float invWidth;\n' + 
+        'uniform float invHeight;\n' + 
+        'uniform int postEffect;\n' + 
+        'void main() {\n' + 
+        'if(postEffect == POST_NONE) {\n' + 
+            'gl_FragColor = texture2D(mSampler, fragUV);\n' + 
+        '}\n' + 
+        'else if(postEffect == POST_SMOOTH) {\n' + 
+            'vec4 avgColor = vec4(0.0, 0.0, 0.0, 0.0);\n' + 
+        '   for(int i = -2; i <= 2; i++) {\n' + 
+        '       for(int j = -2; j <= 2; j++) {\n' + 
+        '           avgColor += texture2D(mSampler, fragUV + vec2(float(j) * invWidth, float(i) * invHeight));\n' + 
+        '        }\n' + 
+        '   }\n' + 
+        '   avgColor /= 25.0;\n' + 
+        '   gl_FragColor = avgColor;\n' + 
+        '}\n' + 
+        'else if(postEffect == POST_GRAYSCALE) {\n' + 
+        '   gl_FragColor = texture2D(mSampler, fragUV);\n' + 
+        '   float grayScale = (gl_FragColor.r + gl_FragColor.g + gl_FragColor.b) / 3.0;\n' + 
+        '   gl_FragColor = vec4(grayScale, grayScale, grayScale, 1.0);\n' + 
+        '}\n' + 
+        'else if(postEffect == POST_LAPLACE) {\n' + 
+        '   gl_FragColor = texture2D(mSampler, fragUV) * 4.0;\n' + 
+        '   gl_FragColor += texture2D(mSampler, fragUV + vec2(-invWidth, 0.0)) * -1.0;\n' + 
+        '   gl_FragColor += texture2D(mSampler, fragUV + vec2(invWidth, 0.0)) * -1.0;\n' + 
+        '   gl_FragColor += texture2D(mSampler, fragUV + vec2(0.0, -invHeight)) * -1.0;\n' + 
+        '   gl_FragColor += texture2D(mSampler, fragUV + vec2(0.0, invHeight)) * -1.0;\n' + 
+        '}\n' + 
+        '}';
+
+    var shader = new Shader(gl, vs_code, fs_code);
+
+    return {
+        uniforms:  {
+            invWidth: gl.getUniformLocation(shader.program, 'invWidth'),
+            intHeight: gl.getUniformLocation(shader.program, 'invHeight'),
+            postEffect: gl.getUniformLocation(shader.program, 'postEffect'),
+        },
+
+        attributes: {
+            position: gl.getAttribLocation(shader.program, 'position'),
+            uv: gl.getAttribLocation(shader.program, 'uv'),
+        },
+
+        bindProgram : function() {
+            shader.bind();
+        },
+
+        bindAttributes : function() 
+        {
+            gl.enableVertexAttribArray(this.attributes.position);
+            gl.vertexAttribPointer(this.attributes.position, 3, gl.FLOAT, false, 48, 0);
+
+            gl.enableVertexAttribArray(this.attributes.uv);
+            gl.vertexAttribPointer(this.attributes.uv, 2, gl.FLOAT, false, 48, 24);
+        },
+
+        unbindAttributes : function()
+        {
+            gl.disableVertexAttribArray(this.attributes.position);
+            gl.disableVertexAttribArray(this.attributes.uv);
+        }
+    };
+}
