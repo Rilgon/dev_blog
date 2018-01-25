@@ -452,3 +452,81 @@ var BasicPostShader = function(gl)
         }
     };
 }
+
+var DepthPostShader = function(gl)
+{
+    const vs_code = 
+        'attribute vec4 position;\n' + 
+        'attribute vec2 uv;\n' + 
+        'varying highp vec2 fragUV;\n' + 
+        'void main() {\n' + 
+        'gl_Position = position;\n' + 
+        'fragUV = vec2(uv.x, 1.0 - uv.y);\n' +
+        '}';
+
+    const fs_code = 
+        'const int POST_DEPTH_LINEAR = 0;\n' + 
+        'const int POST_DEPTH_NON_LINEAR= 1;\n' + 
+        'precision highp float;\n' + 
+        'varying highp vec2 fragUV;\n' + 
+        'uniform sampler2D mColor;\n' + 
+        'uniform sampler2D mDepth;\n' + 
+        'uniform float nearZ;\n' + 
+        'uniform float farZ;\n' + 
+        'uniform int postEffect;\n' + 
+        'void main() {\n' + 
+        'if(postEffect == POST_DEPTH_LINEAR) {\n' + 
+            'float zn = texture2D(mDepth, fragUV).r * 2.0 - 1.0;\n' +
+            'float A = -(farZ + nearZ) / (farZ - nearZ);\n' + 
+            'float B = -(2.0 * farZ * nearZ) / (farZ - nearZ);\n' + 
+            'float ze = B / (zn + A);\n' + 
+            'float depth = abs(ze) / farZ;\n' + 
+            'gl_FragColor = vec4(depth, depth, depth, 1.0);\n' + 
+        '}\n' + 
+        'else if(postEffect == POST_DEPTH_NON_LINEAR) {\n' + 
+            'float depth = texture2D(mDepth, fragUV).r;\n' +
+            'gl_FragColor = vec4(depth, depth, depth, 1.0);\n'+
+        '}\n' + 
+        'else {\n' + 
+            'gl_FragColor = texture2D(mColor, fragUV);\n' +
+        '}\n' + 
+        '}';
+
+    var shader = new Shader(gl, vs_code, fs_code);
+    shader.bind();
+
+    gl.uniform1i(gl.getUniformLocation(shader.program, 'mColor'), 0);
+    gl.uniform1i(gl.getUniformLocation(shader.program, 'mDepth'), 1);
+
+    return {
+        uniforms:  {
+            nearZ: gl.getUniformLocation(shader.program, 'nearZ'),
+            farZ: gl.getUniformLocation(shader.program, 'farZ'),
+            postEffect: gl.getUniformLocation(shader.program, 'postEffect'),
+        },
+
+        attributes: {
+            position: gl.getAttribLocation(shader.program, 'position'),
+            uv: gl.getAttribLocation(shader.program, 'uv'),
+        },
+
+        bindProgram : function() {
+            shader.bind();
+        },
+
+        bindAttributes : function() 
+        {
+            gl.enableVertexAttribArray(this.attributes.position);
+            gl.vertexAttribPointer(this.attributes.position, 3, gl.FLOAT, false, 48, 0);
+
+            gl.enableVertexAttribArray(this.attributes.uv);
+            gl.vertexAttribPointer(this.attributes.uv, 2, gl.FLOAT, false, 48, 24);
+        },
+
+        unbindAttributes : function()
+        {
+            gl.disableVertexAttribArray(this.attributes.position);
+            gl.disableVertexAttribArray(this.attributes.uv);
+        }
+    };
+}
