@@ -13,7 +13,8 @@ javascript: "webgl_2"
     Below was my attempt and results, which basically simulate a linear z-buffer compared to the default non-linear one.</p>
     
     This is a standard row major perspective projection matrix: </p>
-    <img src="/images/row_major_perspective.png">
+    <img src=" {{ "/images/row_major_perspective.png" | absolute_url }} ">
+
 
     <p>Lets call the third row, third column value <b>A</b> and the fourth row, third column value <b>B</b>, <b>Ze</b> will be the z value 
         in eye space, <b>Zc and Wc</b> will be the z and w values in clip space, and <b>Zn</b> will be the z value in NDC space.</p>
