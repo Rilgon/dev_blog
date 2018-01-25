@@ -108,7 +108,7 @@ function main()
         var data = xhrCrateModel.response;
         crateModel = new Model(gl, data.vertices, data.numVertices, data.indices, data.numIndices);
     }
-    xhrCrateModel.open('GET', siteRoot + 'models/crate1.json');
+    xhrCrateModel.open('GET', siteRoot + 'models/Crate1.json');
     xhrCrateModel.responseType = 'json';
     xhrCrateModel.send();
 
