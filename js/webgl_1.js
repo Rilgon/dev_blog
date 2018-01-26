@@ -7,6 +7,23 @@ function main()
     var gl = canvas.getContext("experimental-webgl");
     var siteRoot = document.getElementById('siteRoot').innerHTML;
 
+    var parent = document.getElementsByClassName('post-content')[0];
+    const nearZ = 0.1;
+    const farZ = 256.0;
+    var projection = MatrixPerspective(1.24, canvas.width / canvas.height, nearZ, farZ);
+    function resizeCanvas()
+    {
+        if(parent !== undefined)
+        {
+            if(canvas.width != parent.clientWidth)
+            {
+                canvas.width = parent.clientWidth;
+                gl.viewport(0, 0, canvas.width, canvas.height);
+                projection = MatrixPerspective(1.24, canvas.width / canvas.height, nearZ, farZ);
+            }
+        }
+    }
+
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
     gl.cullFace(gl.BACK);
@@ -232,7 +249,6 @@ function main()
 
     //end skybox
 
-    const projection = MatrixPerspective(1.24, canvas.width / canvas.height, 0.1, 256.0);
     var view = Matrix();
 
     var dirLight = DirectionalLight(Vec3(-1.0, 1.0, 1.0).getNorm(), Vec3(1.0, 1.0, 1.0));
@@ -257,6 +273,8 @@ function main()
     function render(time)
     {
         timer.update(time);
+
+        resizeCanvas();
         camera.update();
 
         colorPass();
