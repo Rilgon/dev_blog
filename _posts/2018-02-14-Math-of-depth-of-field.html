@@ -1,0 +1,62 @@
+---
+layout: post
+title:  "Math of Depth of Field"
+date:   2018-02-14 00:00:00 -0600
+categories: jekyll update
+---
+<p>The circle of confusion formula, a foruma needed to derive a value for much how a pixel should be blurred based on its distance to some focus plane, is not very hard
+    to find. How this forumla is fully derived on the other hand, is something that most articles and papers don't really go into, as you are mostly presented with a high level overview
+    of the math. This post will go step by step through most of the math that derives a value for the circle of confusion, as it's something that I personally wanted to understand
+    before I implemented it inside my graphics system.
+</p>
+
+<img src=" {{ site.baseurl }}/images/base.png">
+<p>
+    Lets start by looking at the above image, which shows a camera lens located at the origin. <b>O</b> is the object distance, or how far away an object is from the lens of the camera.
+    <b>F</b> is the focal length of the camera. In a physical camera, focal length controls how much the camera is zoomed in or out. A small focal length shows more of the scene, while 
+    a large focal length appears to zoom in. In the context of optics, a large focal length means that light rays are not bent as much once they come into contact with the 
+    lens as much as they would be using a small focal length, meaning that rays come into focus less frequently, causing more blurring than there would be using a small focal length.
+    The last value is <b>I</b>. How this value is usually derived is by using the <b>Thin Lens Approximiation</b>. The Thin Lens Approximation allows us to only need to two light rays to compute I, one that is passing
+    though the origin, and the other one goes straight towards the lens, and is bent upon contact, determined by the focal length(and aperature size). Where the two rays intersect is know as the image distance <b>I</b>.
+    The equation for solving this is <p><b>1/F = 1/O + 1/I</b></p> The values for O and F we will have, and we need to solve for <b>I</b>, so the equation is then rewritten as: <p><b>1/I = 1/F - 1/O</b></p> 
+    Rewritting the equation further to have common denominators and subtracing them on the right hand side we get: <p><b>1/I = O/FO - F/FO</b></p> <p><b>1/I = (O - F)/(F * O)</b></p> 
+    Finally we solve to remove the reciprocol from the left side so we just apply the reciprocol to the right hand side and we end up with: <p><b>I = (F * O)/(O - F)</b></p>
+
+    These values don't really tell us how to find the circle of confusion yet, so lets look at how that is derived. In the first image below, a new line has been drawn right at the image distance. This new distance 
+    is the focus distance, it describes the distance needed for the image to be perfectly in focus, or total sharp and not blurry. In that image the focus distance is equal to the image distance, meaning that there is 
+    going to be no blurring. On the other hand, lets look at the image right below it. Now the focus distance is to the left of the image distance. You will notice that as the focus distance line crosses through the two
+    rays passing through the lens, it forms a triangle. The length of the side that the focus distance passes through is known as the radius of the ciricle of confusion, and it the value that we need to solve for. As the 
+    focus distnace moves further away from the image distance, this value will increase, making the image more blurry.
+
+    <img src=" {{ site.baseurl }}/images/base1.png">
+    <img src=" {{ site.baseurl }}/images/base2.png">
+</p>
+
+<p>
+    How we derive this value is actually done using similar triangles. The below image marks all of the sides of the triangles that we need. One thing that I need to mention is the length of side DE. This value is actually
+    the radius of the aperature. the aperature size can be thought of as how large the hole that allows light through in a camera is. a small aperature size will allow less light rays through, creating a sharper and
+    less blurry image(yet more dim), where as a large aperature allows more light through, causing more blurring. This value is defined by us and does not need to be computed. 
+
+    <img src=" {{ site.baseurl }}/images/base3.png">
+</p>
+
+<p>
+    When setting up the similar triangles for this, we end up with: <p><b>BC/DE = AB/AD</b></p> Using the triangles we defined, we can't actually solve for all of these, but we can introduce two new triangles 
+    that will allow us to get our solution. The next image shows these new triangles. Specifically, we are intereseted in the lengths of the sides AF and AG. AF is going to be <b>IF - I</b>, and AG is <b>I</b>. 
+
+    <img src=" {{ site.baseurl }}/images/base4.png">
+    <img src=" {{ site.baseurl }}/images/base5.png">
+</p>    
+
+<p>
+    Settings up another set of similar triangles using these two new ones we get:
+    <p><b>AB/AD = AF/AG</b></p> We can then substitute this to the first similar triangle equation we set and replace the right hand side, and we get: <p><b>BC/DE = AF/AG</b></p> Finally we move DE to the right side
+    and our solution for BC(the radius of the circle of confusion) is: <p><b>BC = DE * (AF/AG)</b></p> Using the known values, we can rewrite this as: <p><b>BC = aperatureSize * ((IF - I) / I) </b></p> Expanding this out to 
+    use the defintion of I you now get: <p><b>BC = aperatureSize * (IF - ((F * O) / (O - F))) / ((F * O) / (O - F))</b></p>
+</p>
+
+<p>
+    And that is mostly all that you need to understand to get a basic depth of field formula working for how much you need to blur around a pixel. Obviously there are lots of things needed aside from this formula to
+    get depth of field working in a graphics system, but understanding these fundementals was something that made reading a lot of the supplementary materials about this 
+    easier than it would have been had I chosen to just use the high level math presented to me.
+</p>

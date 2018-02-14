@@ -26,29 +26,18 @@ layout: default
   <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
 </article>
 
-{% if site.baseurl == "" %}
-  <script type='text/nojavascript' id='siteRoot' >/</script>
-{% else %}
-  <script type='text/nojavascript' id='siteRoot'>/{{ site.baseurl }}/</script>
-{% endif %}
+
+<script type='text/nojavascript' id='siteRoot'>{{ site.baseurl }}/</script>
 
 {% for file in site.static_files %}
     {% if file.common_js %}
-      {% if site.baseurl == "" %}
-        <script type='text/javascript' src='{{ file.path }}' ></script>
-      {% else %}
-        <script type='text/javascript' src='/{{ site.baseurl }}{{ file.path }}' ></script>
-      {% endif %}
+        <script type='text/javascript' src='{{ site.baseurl }}{{ file.path }}' ></script>
     {% endif %}
 {% endfor %}
 
 {% for file in site.static_files %}
     {% if file.basename == page.javascript %}
-      {% if site.baseurl == "" %}
-        <script type='text/javascript' src='{{ file.path }}' ></script>
-      {% else %}
-        <script type='text/javascript' src='/{{ site.baseurl }}{{ file.path }}' ></script>
-      {% endif %}
+        <script type='text/javascript' src='{{ site.baseurl }}{{ file.path }}' ></script>
     {% endif %}
 {% endfor %}
 
