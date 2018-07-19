@@ -17,8 +17,8 @@ title: Bart Wlodarczyk
 email: your-email@example.com
 description: >- # this means to ignore newlines until "baseurl:"
     Graphics Programmer
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
+baseurl: "/dev_blog" # the subpath of your site, e.g. /blog
+url: "https://rilgon.github.io/dev_blog/" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: jekyllrb
 github_username:  jekyll
 
